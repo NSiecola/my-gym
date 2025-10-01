@@ -1,3 +1,4 @@
+// apps/mobile/app/index.tsx
 import React, { useState } from 'react';
 import {
   StyleSheet,
@@ -55,7 +56,7 @@ export default function LoginScreen() {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="light-content" />
       <ScrollView contentContainerStyle={styles.container}>
-
+        
         <View style={styles.card}>
           <View style={styles.header}>
             <Dumbbell size={48} color="white" />
@@ -87,17 +88,17 @@ export default function LoginScreen() {
                 secureTextEntry
               />
             </View>
-
+            
             <TouchableOpacity>
                <Text style={styles.forgotPasswordText}>Esqueceu a senha?</Text>
             </TouchableOpacity>
-
+            
             {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
             <TouchableOpacity style={styles.button} onPress={handleSubmit}>
               <Text style={styles.buttonText}>Entrar</Text>
             </TouchableOpacity>
-
+            
             <Text style={styles.signupText}>
               Não tem uma conta?{' '}
               <Text style={styles.signupLink}>Cadastre-se</Text>
@@ -111,21 +112,21 @@ export default function LoginScreen() {
               <Zap size={28} color="white" />
             </View>
             <Text style={styles.featureTitle}>Simples e Rápido</Text>
-            <Text style={styles.featureSubtitle}>Registre suas séries em segundos durante o treino.</Text>
+            <Text style={styles.featureSubtitle}>Registre suas séries em segundos.</Text>
           </View>
           <View style={styles.featureItem}>
             <View style={styles.featureIconContainer}>
               <History size={28} color="white" />
             </View>
             <Text style={styles.featureTitle}>Histórico Completo</Text>
-            <Text style={styles.featureSubtitle}>Acompanhe sua evolução exercício por exercício.</Text>
+            <Text style={styles.featureSubtitle}>Acompanhe sua evolução.</Text>
           </View>
           <View style={styles.featureItem}>
             <View style={styles.featureIconContainer}>
               <Plus size={28} color="white" />
             </View>
-            <Text style={styles.featureTitle}>Totalmente Customizável</Text>
-            <Text style={styles.featureSubtitle}>Crie suas rotinas e exercícios personalizados.</Text>
+            <Text style={styles.featureTitle}>Customizável</Text>
+            <Text style={styles.featureSubtitle}>Crie seus treinos e exercícios.</Text>
           </View>
         </View>
       </ScrollView>
@@ -134,7 +135,10 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#000' },
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
   container: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -147,20 +151,81 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 400,
   },
-  header: { alignItems: 'center', marginBottom: 32 },
-  title: { fontFamily: 'Poppins_700Bold', fontSize: 40, color: '#fff', marginTop: 16, marginBottom: 8 },
-  subtitle: { fontFamily: 'Poppins_400Regular', fontSize: 16, color: '#a1a1aa' },
-  form: { width: '100%' },
-  inputContainer: { position: 'relative', width: '100%', marginBottom: 15 },
-  inputIcon: { position: 'absolute', left: 15, top: 15, zIndex: 1 },
-  input: { fontFamily: 'Poppins_400Regular', backgroundColor: '#27272a', color: '#fff', paddingLeft: 50, paddingRight: 15, paddingVertical: 15, borderRadius: 8, fontSize: 16 },
-  forgotPasswordText: { fontFamily: 'Poppins_400Regular', color: '#a1a1aa', fontSize: 14, textAlign: 'right', marginBottom: 16 },
-  button: { backgroundColor: '#fff', padding: 15, borderRadius: 8, alignItems: 'center', marginTop: 10 },
-  buttonText: { fontFamily: 'Poppins_700Bold', color: '#000', fontSize: 16 },
-  signupText: { fontFamily: 'Poppins_400Regular', color: '#a1a1aa', textAlign: 'center', marginTop: 24 },
-  signupLink: { color: '#fff', fontWeight: 'bold' },
-  errorText: { fontFamily: 'Poppins_400Regular', color: '#ef4444', textAlign: 'center', marginBottom: 10 },
-
+  header: {
+    alignItems: 'center',
+    marginBottom: 32,
+  },
+  title: {
+    fontFamily: 'Poppins_700Bold',
+    fontSize: 40,
+    color: '#fff',
+    marginTop: 20,
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontFamily: 'Poppins_400Regular',
+    fontSize: 16,
+    color: '#a1a1aa',
+  },
+  form: {
+    width: '100%',
+  },
+  inputContainer: {
+    position: 'relative',
+    width: '100%',
+    marginBottom: 15,
+  },
+  inputIcon: {
+    position: 'absolute',
+    left: 15,
+    top: 15,
+    zIndex: 1,
+  },
+  input: {
+    fontFamily: 'Poppins_400Regular',
+    backgroundColor: '#27272a',
+    color: '#fff',
+    paddingLeft: 50,
+    paddingRight: 15,
+    paddingVertical: 15,
+    borderRadius: 8,
+    fontSize: 16,
+  },
+  forgotPasswordText: {
+    fontFamily: 'Poppins_400Regular',
+    color: '#a1a1aa',
+    fontSize: 14,
+    textAlign: 'right',
+    marginBottom: 16,
+  },
+  button: {
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  buttonText: {
+    fontFamily: 'Poppins_700Bold',
+    color: '#000',
+    fontSize: 16,
+  },
+  signupText: {
+    fontFamily: 'Poppins_400Regular',
+    color: '#a1a1aa',
+    textAlign: 'center',
+    marginTop: 24,
+  },
+  signupLink: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  errorText: {
+    fontFamily: 'Poppins_400Regular',
+    color: '#ef4444',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
   featuresContainer: {
     width: '100%',
     maxWidth: 400,
