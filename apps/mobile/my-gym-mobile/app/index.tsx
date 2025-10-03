@@ -8,13 +8,14 @@ import {
   TouchableOpacity,
   StatusBar,
   SafeAreaView,
-  ScrollView
+  ScrollView,
+  ActivityIndicator
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter } from 'expo-router';
-import { Dumbbell, Mail, Lock, Zap, History, Plus } from 'lucide-react-native';
+import { useRouter, Link } from 'expo-router';
+import { Dumbbell, Mail, Lock, Eye, Zap, Clock, Plus } from 'lucide-react-native';
 
-import { useFonts, Poppins_400Regular, Poppins_700Bold } from '@expo-google-fonts/poppins';
+import { useFonts, Poppins_400Regular, Poppins_500Medium, Poppins_700Bold } from '@expo-google-fonts/poppins';
 
 const API_URL = 'http://localhost:3000';
 
@@ -23,14 +24,35 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   let [fontsLoaded] = useFonts({
     Poppins_400Regular,
+    Poppins_500Medium,
     Poppins_700Bold,
   });
 
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleSubmit = async () => {
     setError('');
+    
+    if (!email.trim() || !password.trim()) {
+      setError('Por favor, preencha todos os campos');
+      return;
+    }
+    
+    if (!isValidEmail(email)) {
+      setError('Por favor, insira um email válido');
+      return;
+    }
+    
+    setIsLoading(true);
+    
     try {
       const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
@@ -42,9 +64,11 @@ export default function LoginScreen() {
         throw new Error(data.message || 'Algo deu errado no login');
       }
       await AsyncStorage.setItem('authToken', data.token);
-      router.push('/dashboard');
+      router.replace('/dashboard');
     } catch (err: any) {
       setError(err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -59,71 +83,96 @@ export default function LoginScreen() {
         
         <View style={styles.card}>
           <View style={styles.header}>
-            <Dumbbell size={48} color="white" />
+            <View style={styles.logoContainer}>
+              <Dumbbell size={28} color="#58a6ff" />
+            </View>
             <Text style={styles.title}>MyGym</Text>
             <Text style={styles.subtitle}>Sua plataforma de treinos</Text>
           </View>
 
           <View style={styles.form}>
+            <Text style={styles.label}>Email</Text>
             <View style={styles.inputContainer}>
-              <Mail style={styles.inputIcon} size={20} color="#9ca3af" />
+              <Mail style={styles.inputIcon} size={18} color="#8b949e" />
               <TextInput
                 style={styles.input}
-                placeholder="Email"
-                placeholderTextColor="#6b7280"
+                placeholder="seu@email.com"
+                placeholderTextColor="#8b949e"
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
               />
             </View>
+            
+            <Text style={styles.label}>Senha</Text>
             <View style={styles.inputContainer}>
-              <Lock style={styles.inputIcon} size={20} color="#9ca3af" />
+              <Lock style={styles.inputIcon} size={18} color="#8b949e" />
               <TextInput
                 style={styles.input}
-                placeholder="Senha"
-                placeholderTextColor="#6b7280"
+                placeholder="••••••••"
+                placeholderTextColor="#8b949e"
                 value={password}
                 onChangeText={setPassword}
-                secureTextEntry
+                secureTextEntry={!showPassword}
               />
+              <TouchableOpacity 
+                style={styles.eyeIcon} 
+                onPress={() => setShowPassword(!showPassword)}
+              >
+                <Eye size={18} color="#8b949e" />
+              </TouchableOpacity>
             </View>
             
-            <TouchableOpacity>
-               <Text style={styles.forgotPasswordText}>Esqueceu a senha?</Text>
+            <TouchableOpacity style={styles.forgotPasswordContainer}>
+              <Text style={styles.forgotPasswordText}>Esqueceu a senha?</Text>
             </TouchableOpacity>
             
             {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-            <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-              <Text style={styles.buttonText}>Entrar</Text>
+            <TouchableOpacity 
+              style={[styles.loginButton, isLoading && styles.loginButtonDisabled]} 
+              onPress={handleSubmit}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator color="#FFFFFF" size="small" />
+              ) : (
+                <Text style={styles.loginButtonText}>Entrar</Text>
+              )}
             </TouchableOpacity>
             
-            <Text style={styles.signupText}>
-              Não tem uma conta?{' '}
-              <Text style={styles.signupLink}>Cadastre-se</Text>
-            </Text>
+            <View style={styles.signupContainer}>
+              <Text style={styles.signupText}>
+                Não tem uma conta? 
+              </Text>
+              <TouchableOpacity>
+                <Text style={styles.signupLink}>Cadastre-se</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
 
-        <View style={styles.featuresContainer}>
+        <View style={styles.featuresSection}>
           <View style={styles.featureItem}>
             <View style={styles.featureIconContainer}>
-              <Zap size={28} color="white" />
+              <Zap size={24} color="#FFFFFF" />
             </View>
             <Text style={styles.featureTitle}>Simples e Rápido</Text>
             <Text style={styles.featureSubtitle}>Registre suas séries em segundos.</Text>
           </View>
+          
           <View style={styles.featureItem}>
             <View style={styles.featureIconContainer}>
-              <History size={28} color="white" />
+              <Clock size={24} color="#FFFFFF" />
             </View>
             <Text style={styles.featureTitle}>Histórico Completo</Text>
             <Text style={styles.featureSubtitle}>Acompanhe sua evolução.</Text>
           </View>
+          
           <View style={styles.featureItem}>
             <View style={styles.featureIconContainer}>
-              <Plus size={28} color="white" />
+              <Plus size={24} color="#FFFFFF" />
             </View>
             <Text style={styles.featureTitle}>Customizável</Text>
             <Text style={styles.featureSubtitle}>Crie seus treinos e exercícios.</Text>
@@ -137,122 +186,149 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#0d1117',
   },
   container: {
-    justifyContent: 'center',
-    alignItems: 'center',
     padding: 24,
   },
   card: {
-    backgroundColor: '#18181B',
-    borderRadius: 24,
-    padding: 32,
-    width: '100%',
-    maxWidth: 400,
+    backgroundColor: '#161b22',
+    borderRadius: 8,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: '#30363d',
+    marginBottom: 40,
   },
   header: {
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: 24,
+  },
+  logoContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: 'rgba(88, 166, 255, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
   },
   title: {
     fontFamily: 'Poppins_700Bold',
-    fontSize: 40,
-    color: '#fff',
-    marginTop: 20,
+    fontSize: 28,
+    color: '#c9d1d9',
     marginBottom: 4,
   },
   subtitle: {
     fontFamily: 'Poppins_400Regular',
-    fontSize: 16,
-    color: '#a1a1aa',
+    fontSize: 14,
+    color: '#8b949e',
+    textAlign: 'center',
   },
   form: {
     width: '100%',
   },
+  label: {
+    fontFamily: 'Poppins_500Medium',
+    fontSize: 14,
+    color: '#c9d1d9',
+    marginBottom: 8,
+  },
   inputContainer: {
     position: 'relative',
-    width: '100%',
-    marginBottom: 15,
+    marginBottom: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#0d1117',
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#30363d',
   },
   inputIcon: {
-    position: 'absolute',
-    left: 15,
-    top: 15,
-    zIndex: 1,
+    marginLeft: 12,
+    marginRight: 8,
   },
   input: {
+    flex: 1,
     fontFamily: 'Poppins_400Regular',
-    backgroundColor: '#27272a',
-    color: '#fff',
-    paddingLeft: 50,
-    paddingRight: 15,
-    paddingVertical: 15,
-    borderRadius: 8,
-    fontSize: 16,
+    color: '#c9d1d9',
+    paddingVertical: 10,
+    fontSize: 14,
+  },
+  eyeIcon: {
+    padding: 10,
+  },
+  forgotPasswordContainer: {
+    alignItems: 'flex-end',
+    marginBottom: 16,
   },
   forgotPasswordText: {
     fontFamily: 'Poppins_400Regular',
-    color: '#a1a1aa',
+    color: '#58a6ff',
     fontSize: 14,
-    textAlign: 'right',
-    marginBottom: 16,
-  },
-  button: {
-    backgroundColor: '#fff',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  buttonText: {
-    fontFamily: 'Poppins_700Bold',
-    color: '#000',
-    fontSize: 16,
-  },
-  signupText: {
-    fontFamily: 'Poppins_400Regular',
-    color: '#a1a1aa',
-    textAlign: 'center',
-    marginTop: 24,
-  },
-  signupLink: {
-    color: '#fff',
-    fontWeight: 'bold',
   },
   errorText: {
     fontFamily: 'Poppins_400Regular',
-    color: '#ef4444',
-    textAlign: 'center',
-    marginBottom: 10,
+    color: '#f85149',
+    marginBottom: 16,
   },
-  featuresContainer: {
-    width: '100%',
-    maxWidth: 400,
-    marginTop: 64,
+  loginButton: {
+    backgroundColor: '#0A84FF',
+    paddingVertical: 12,
+    borderRadius: 6,
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  loginButtonDisabled: {
+    opacity: 0.7,
+  },
+  loginButtonText: {
+    fontFamily: 'Poppins_700Bold',
+    color: '#fff',
+    fontSize: 16,
+  },
+  signupContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  signupText: {
+    fontFamily: 'Poppins_400Regular',
+    color: '#8b949e',
+    fontSize: 14,
+    marginRight: 4,
+  },
+  signupLink: {
+    fontFamily: 'Poppins_400Regular',
+    color: '#58a6ff',
+    fontSize: 14,
+  },
+  featuresSection: {
+    marginTop: 20,
     alignItems: 'center',
   },
   featureItem: {
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: 40,
   },
   featureIconContainer: {
-    backgroundColor: '#18181B',
-    padding: 12,
-    borderRadius: 12,
+    width: 60,
+    height: 60,
+    borderRadius: 16,
+    backgroundColor: '#1c1c1e',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 16,
   },
   featureTitle: {
     fontFamily: 'Poppins_700Bold',
-    color: '#fff',
     fontSize: 18,
+    color: '#FFFFFF',
+    marginBottom: 4,
     textAlign: 'center',
   },
   featureSubtitle: {
     fontFamily: 'Poppins_400Regular',
-    color: '#a1a1aa',
     fontSize: 14,
+    color: '#8b949e',
     textAlign: 'center',
-    marginTop: 4,
   },
 });
